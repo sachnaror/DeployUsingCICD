@@ -1,6 +1,6 @@
-# name: Deploy on server
-# on:
-#   push:
+ name: Test
+ on:
+   push:
 #     branches:
 #       - main
 
