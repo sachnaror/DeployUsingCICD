@@ -1,6 +1,6 @@
+from blogapp.models import Blog
 from django.test import TestCase
 
-from blogapp.models import Blog
 
 class BlogModelTest(TestCase):
     @classmethod
