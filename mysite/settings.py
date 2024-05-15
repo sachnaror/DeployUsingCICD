@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blogapp',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -111,10 +112,38 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR/'static'
+SPACES = config('SPACES', 'FALSE') == 'TRUE'
+if SPACES:
 
-MEDIA_URL = "img/"
-MEDIA_ROOT = BASE_DIR/'media'
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL')
+
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
+
+    # static settings
+    AWS_LOCATION = 'static'
+    STATIC_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_LOCATION}/'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    # newly added - media settings
+    MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'mystite.spaces.MediaStorage'
+
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / 'static'
+
+    # newly added - media settings
+    MEDIA_URL = "img/"
+    MEDIA_ROOT = BASE_DIR/'media'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
